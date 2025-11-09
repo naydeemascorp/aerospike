@@ -27,8 +27,10 @@ pub const AeroError = error{
 // ╚══════════════════════════════════════════════════════════════════════════════╝
 pub fn renderError(logger: *const Logger, title: []const u8, details: []const u8, hint: []const u8) !void {
     const sep = "══════════════════════════════════════════════════════════════";
-    try logger.err("error", title);
-    std.debug.print("\x1b[31;1m║ Details: {s}\x1b[0m\n", .{details});
-    std.debug.print("\x1b[35m║ Hint   : {s}\x1b[0m\n", .{hint});
+    try logger.err("error", logger.sanitize(title));
+    const safe_details = logger.sanitize(details);
+    const safe_hint = logger.sanitize(hint);
+    std.debug.print("\x1b[31;1m║ Details: {s}\x1b[0m\n", .{safe_details});
+    std.debug.print("\x1b[35m║ Hint   : {s}\x1b[0m\n", .{safe_hint});
     std.debug.print("\x1b[31m╚{s}\x1b[0m\n", .{sep});
 }

@@ -58,6 +58,35 @@ pub const Logger = struct {
         return "\x1b[0m";
     }
 
+    fn hasKeywordInsensitive(haystack: []const u8, needle: []const u8) bool {
+        if (needle.len == 0 or haystack.len < needle.len) return false;
+        var i: usize = 0;
+        while (i + needle.len <= haystack.len) : (i += 1) {
+            var j: usize = 0;
+            var match = true;
+            while (j < needle.len) : (j += 1) {
+                const a = std.ascii.toLower(haystack[i + j]);
+                const b = std.ascii.toLower(needle[j]);
+                if (a != b) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) return true;
+        }
+        return false;
+    }
+
+    fn containsSensitive(s: []const u8) bool {
+        return hasKeywordInsensitive(s, "password") or hasKeywordInsensitive(s, "passwd") or hasKeywordInsensitive(s, "pwd") or hasKeywordInsensitive(s, "secret") or hasKeywordInsensitive(s, "token") or hasKeywordInsensitive(s, "bearer ") or hasKeywordInsensitive(s, "authorization:") or hasKeywordInsensitive(s, "x-api-key") or hasKeywordInsensitive(s, "api_key") or hasKeywordInsensitive(s, "secret_access_key") or hasKeywordInsensitive(s, "private_key") or hasKeywordInsensitive(s, "-----begin");
+    }
+
+    fn sanitize(self: *const Logger, s: []const u8) []const u8 {
+        _ = self; // no per-instance state yet
+        if (containsSensitive(s)) return "[REDACTED]";
+        return s;
+    }
+
     // ╔══════════════════════════════════════════════════════════════════════════╗
     // ║ Function: Log Line                                                       ║
     // ║ Brief   : Prints styled message with level, timestamp, and module tag    ║
@@ -74,7 +103,8 @@ pub const Logger = struct {
         if (!self.should(level)) return;
         const ts = std.time.milliTimestamp();
         std.debug.print("{s}╔ {s} [{s}] {d}ms{s}\n", .{ color(level), label(level), module, ts, reset() });
-        std.debug.print("{s}║ {s}{s}\n", .{ color(level), msg, reset() });
+        const safe = self.sanitize(msg);
+        std.debug.print("{s}║ {s}{s}\n", .{ color(level), safe, reset() });
         std.debug.print("{s}╚══════════════════════════════════════════════════════════════{s}\n", .{ color(level), reset() });
     }
 
