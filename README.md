@@ -184,7 +184,7 @@ Public APIs available via `const aerospike = @import("aerospike");`.
 
 | Symbol | Kind | Signature (simplified) | Description |
 | --- | --- | --- | --- |
-| `Edition` | enum | `community | enterprise` | Aerospike editions. |
+| `Edition` | enum | `community or enterprise` | Aerospike editions. |
 | `detectEditionFromEnvOrDefault` | fn | `(allocator, env_key) !Edition` | Reads edition from env with defaults. |
 | `Client` | struct | methods below | Aerospike client with failover. |
 | `Client.init` | fn | `(allocator, cfg) !Client` | Initialize client with logger. |
@@ -201,7 +201,7 @@ Public APIs available via `const aerospike = @import("aerospike");`.
 | `Credentials.fromSecretsFile` | fn | `(allocator, path, prefix, logger) !Credentials` | Parse credentials from file. |
 | `Credentials.validate` | fn | `(self, logger) !void` | Validate credentials. |
 | `Logger` | struct | `init(level)` + level fns | Structured logging. |
-| `LogLevel` | enum | `trace|debug|info|warn|err|off` | Logging levels. |
+| `LogLevel` | enum | `trace, debug, info, warn, err, or off` | Logging levels. |
 | `version` | fn | `() []const u8` | Library version string. |
 
 Internal/sub-module helpers:
@@ -209,7 +209,7 @@ Internal/sub-module helpers:
 | Symbol | Kind | Signature | Module |
 | --- | --- | --- | --- |
 | `sendInfo` | fn | `(allocator, host, port, cmd, timeout_ms, logger) ![]u8` | `aero_net` |
-| `AeroError` | error set | `ConnectionFailed | ...` | `aero_core` |
+| `AeroError` | error set | `ConnectionFailed or ...` | `aero_core` |
 | `editionParityStatement` | fn | `() []const u8` | `aero_core` |
 | `boxMessage` | fn | `(allocator, title, color, body) ![]u8` | `aero_util` |
 
